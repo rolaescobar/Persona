@@ -19,10 +19,24 @@ class Program
                 context.Database.OpenConnection();
                 Console.WriteLine("Conexión a la base de datos establecida correctamente.");
 
-                // Aquí puedes hacer una consulta simple para validar que todo esté funcionando
-                var usuarios = context.Usuarios.ToList();
+            
+                var usuarios = context.Usuarios
+                    .Include(u=> u.IdTipoUsuarioNavigation)
+                   .Where(u => u.IdUsuario == 1)
+                    .Select(u=> new
+                    {
+                        NombreUsuario = u.NombreUsuario,
+                        TipoUsuario = u.IdTipoUsuarioNavigation.Descripcion
+
+                    })
+                    .ToList();
+
+                foreach(var usuario in usuarios)
+                {
+                    Console.WriteLine($"Nombre de usuario: {usuario.NombreUsuario},Tipo de usuario: {usuario.TipoUsuario}");
+                }
              
-                Console.WriteLine($"Usuarios encontrados: {usuarios.Count}");
+                
                 
             }
             catch (Exception ex)
